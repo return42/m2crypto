@@ -77,14 +77,14 @@ class AuthCookieJar:
             and (c.output() == cookie.output())
 
     def isGoodCookieString(self, cookie_str):
-        # type: (Union[dict, bytes]) -> Union[bool, int]
+        # type: (Union[dict, bytes]) -> Union[bool]
         c = SimpleCookie()
         c.load(cookie_str)
         if _TOKEN not in c:
-            return 0
+            return False
         undough = unmix3(c[_TOKEN].value)
         if undough is None:
-            return 0
+            return False
         exp, data, mac = undough
         c2 = self.makeCookie(exp, data)
         return (not c2.isExpired()) and (c2._mac == mac)
@@ -116,10 +116,10 @@ class AuthCookie:
         """Return the cookie's MAC."""
         return self._mac
 
-    def output(self):
+    def output(self, header="Set-Cookie:"):
         # type: () -> str
         """Return the cookie's output in "Set-Cookie" format."""
-        return self._cookie.output()
+        return self._cookie.output(header=header)
 
     def value(self):
         # type: () -> str
