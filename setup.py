@@ -29,6 +29,7 @@ from setuptools.command import build_ext
 
 REQUIRED_SWIG_VERSION = '2.0.4'
 MAXIMUM_OPENSSL_VERSION = '1.0.1'
+#MAXIMUM_OPENSSL_VERSION = '1.0.2'
 
 
 if sys.version_info[:2] <= (2, 6):
@@ -66,6 +67,8 @@ def openssl_version(req_ver):
 
     ver_str = out.split()[1].strip(string.letters + string.punctuation +
                                    string.whitespace)
+    # ver_str = out.split()[1].strip(string.ascii_letters + string.punctuation +
+    #                                string.whitespace)
 
     if not ver_str:
         raise OSError('Unknown format of openssl version -v output:\n%s' % out)
@@ -217,10 +220,11 @@ def swig_version(req_ver):
     return StrictVersion(ver_str) >= StrictVersion(req_ver)
 
 
-if sys.platform == 'darwin':
-    my_extra_compile_args = ["-Wno-deprecated-declarations"]
-else:
-    my_extra_compile_args = []
+my_extra_compile_args = []
+if os.environ.get("EXT_DEBUG", False):
+    my_extra_compile_args.append('-g')
+    my_extra_compile_args.append('-O0')
+
 
 # Don't try to run swig on the ancient platforms
 if swig_version(REQUIRED_SWIG_VERSION):
@@ -228,10 +232,9 @@ if swig_version(REQUIRED_SWIG_VERSION):
 else:
     lib_sources = ['SWIG/_m2crypto_wrap.c']
 
-
 m2crypto = setuptools.Extension(name='M2Crypto._m2crypto',
                                 sources=lib_sources,
-                                extra_compile_args=['-DTHREADING'],
+                                extra_compile_args=['-DTHREADING'] + my_extra_compile_args,
                                 # Uncomment to build Universal Mac binaries
                                 # extra_link_args =
                                 #     ['-Wl,-search_paths_first'],
