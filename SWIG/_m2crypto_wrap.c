@@ -4609,55 +4609,6 @@ void bio_init(PyObject *bio_err) {
     _bio_err = bio_err;
 }
 
-BIO *bio_new_pyfile(PyObject *pyfile, int bio_close) {
-    FILE *fp = NULL;
-#if PY_MAJOR_VERSION >= 3
-    int fd;
-
-    if ((fd = PyObject_AsFileDescriptor(pyfile)) == -1) {
-        Py_RETURN_NONE;
-    }
-    if (PyObject_HasAttrString(pyfile, "mode")) {
-        PyObject *mode_obj = PyObject_GetAttrString(pyfile, "mode");
-        if (mode_obj == NULL) {
-            return PyErr_Format(PyExc_ValueError,
-                    "File does have NULL mode attribute!");
-        }
-        else {
-            char *mode = PyUnicode_AsUTF8AndSize(mode_obj, NULL);
-            fp = fdopen(fd, mode);
-        }
-    }
-    else {
-        return PyErr_Format(PyExc_ValueError,
-                "File doesn’t have mode attribute!");
-    }
-
-#else
-    fp = PyFile_AsFile(pyfile);
-#endif
-    BIO *bio = BIO_new_fp(fp, bio_close); /* returns NULL if error occurred */
-
-    if (bio == NULL) {
-        char *name = "";
-#if PY_MAJOR_VERSION >= 3
-        if (PyObject_HasAttrString(pyfile, "name")) {
-            name = PyUnicode_AsUTF8AndSize(
-                   PyObject_CallMethod(pyfile, "name", NULL), NULL);
-        }
-        else {
-            return PyErr_Format(PyExc_ValueError,
-                    "File doesn’t have name attribute!");
-        }
-#else
-        name = PyString_AsString(PyFile_Name(pyfile));
-#endif
-        return PyErr_Format(PyExc_MemoryError,
-                "Opening of the new BIO on file %s failed!", name);
-    }
-    return bio;
-}
-
 PyObject *bio_read(BIO *bio, int num) {
     PyObject *blob;
     void *buf;
@@ -10490,33 +10441,6 @@ SWIGINTERN PyObject *_wrap_bio_init(PyObject *self, PyObject *args) {
   }
   bio_init(arg1);
   resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_bio_new_pyfile(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  PyObject *arg1 = (PyObject *) 0 ;
-  int arg2 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  BIO *result = 0 ;
-  
-  if(!PyArg_UnpackTuple(args,(char *)"bio_new_pyfile",2,2,&obj0,&obj1)) SWIG_fail;
-  {
-    arg1=obj0;
-  }
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "bio_new_pyfile" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  result = (BIO *)bio_new_pyfile(arg1,arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_BIO, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -28670,7 +28594,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"bio_push", _wrap_bio_push, METH_VARARGS, NULL},
 	 { (char *)"bio_pop", _wrap_bio_pop, METH_VARARGS, NULL},
 	 { (char *)"bio_init", _wrap_bio_init, METH_VARARGS, NULL},
-	 { (char *)"bio_new_pyfile", _wrap_bio_new_pyfile, METH_VARARGS, NULL},
 	 { (char *)"bio_read", _wrap_bio_read, METH_VARARGS, NULL},
 	 { (char *)"bio_gets", _wrap_bio_gets, METH_VARARGS, NULL},
 	 { (char *)"bio_write", _wrap_bio_write, METH_VARARGS, NULL},

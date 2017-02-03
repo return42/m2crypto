@@ -68,55 +68,6 @@ void bio_init(PyObject *bio_err) {
     _bio_err = bio_err;
 }
 
-BIO *bio_new_pyfile(PyObject *pyfile, int bio_close) {
-    FILE *fp = NULL;
-#if PY_MAJOR_VERSION >= 3
-    int fd;
-
-    if ((fd = PyObject_AsFileDescriptor(pyfile)) == -1) {
-        Py_RETURN_NONE;
-    }
-    if (PyObject_HasAttrString(pyfile, "mode")) {
-        PyObject *mode_obj = PyObject_GetAttrString(pyfile, "mode");
-        if (mode_obj == NULL) {
-            return PyErr_Format(PyExc_ValueError,
-                    "File does have NULL mode attribute!");
-        }
-        else {
-            char *mode = PyUnicode_AsUTF8AndSize(mode_obj, NULL);
-            fp = fdopen(fd, mode);
-        }
-    }
-    else {
-        return PyErr_Format(PyExc_ValueError,
-                "File doesn’t have mode attribute!");
-    }
-
-#else
-    fp = PyFile_AsFile(pyfile);
-#endif
-    BIO *bio = BIO_new_fp(fp, bio_close); /* returns NULL if error occurred */
-
-    if (bio == NULL) {
-        char *name = "";
-#if PY_MAJOR_VERSION >= 3
-        if (PyObject_HasAttrString(pyfile, "name")) {
-            name = PyUnicode_AsUTF8AndSize(
-                   PyObject_CallMethod(pyfile, "name", NULL), NULL);
-        }
-        else {
-            return PyErr_Format(PyExc_ValueError,
-                    "File doesn’t have name attribute!");
-        }
-#else
-        name = PyString_AsString(PyFile_Name(pyfile));
-#endif
-        return PyErr_Format(PyExc_MemoryError,
-                "Opening of the new BIO on file %s failed!", name);
-    }
-    return bio;
-}
-
 PyObject *bio_read(BIO *bio, int num) {
     PyObject *blob;
     void *buf;
