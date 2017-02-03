@@ -18,10 +18,9 @@ Copyright (C) 2004-2007 OSAF. All Rights Reserved.
 Copyright 2008-2011 Heikki Toivonen. All rights reserved.
 """
 # noqa
-from distutils.version import StrictVersion
-__version__ = '0.25.1'
+__version__ = '0.25.1.post1'
 version = __version__  # type: str
-version_info = StrictVersion(__version__).version
+version_info = tuple(int(s.replace('post', '')) for s in __version__.split('.'))
 
 from M2Crypto import (ASN1, AuthCookie, BIO, BN, DH, DSA, EVP, Engine, Err,
                       PGP, RSA, Rand, SMIME, SSL, X509, m2crypto,
