@@ -388,7 +388,7 @@ class MiscSSLClientTestCase(BaseSSLClientTestCase):
             s.close()
         finally:
             self.stop_server(pid)
-        self.assertIn(b's_server -quiet -www', data)
+        self.assertIn('s_server -quiet -www', data)
 
     def test_verify_cb_new_class(self):
         pid = self.start_server(self.args)
@@ -406,7 +406,7 @@ class MiscSSLClientTestCase(BaseSSLClientTestCase):
             s.close()
         finally:
             self.stop_server(pid)
-        self.assertIn(b's_server -quiet -www', data)
+        self.assertIn('s_server -quiet -www', data)
 
     def test_verify_cb_new_function(self):
         pid = self.start_server(self.args)
@@ -423,7 +423,7 @@ class MiscSSLClientTestCase(BaseSSLClientTestCase):
             s.close()
         finally:
             self.stop_server(pid)
-        self.assertIn(b's_server -quiet -www', data)
+        self.assertIn('s_server -quiet -www', data)
 
     def test_verify_cb_lambda(self):
         pid = self.start_server(self.args)
@@ -530,7 +530,7 @@ class MiscSSLClientTestCase(BaseSSLClientTestCase):
             s.close()
         finally:
             self.stop_server(pid)
-        self.assertIn(b's_server -quiet -www', data)
+        self.assertIn('s_server -quiet -www', data)
 
     def test_verify_allow_unknown_new(self):
         pid = self.start_server(self.args)
@@ -547,7 +547,7 @@ class MiscSSLClientTestCase(BaseSSLClientTestCase):
             s.close()
         finally:
             self.stop_server(pid)
-        self.assertIn(b's_server -quiet -www', data)
+        self.assertIn('s_server -quiet -www', data)
 
     def test_verify_cert(self):
         pid = self.start_server(self.args)
