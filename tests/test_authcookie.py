@@ -116,7 +116,7 @@ class AuthCookieTestCase(unittest.TestCase):
     def test_cookie_str_arbitrary_change(self):
         c = self.jar.makeCookie(self.exp, self.data)
         cout = c.output(header="")
-        cout_str = cout[:32] + 'this is bad' + cout[32:]
+        cout_str = cout[:20] + 'this is bad' + cout[20:]
         s = SimpleCookie()
         s.load(cout_str)
         self.assertFalse(self.jar.isGoodCookieString(s.output(header="")))
@@ -132,7 +132,7 @@ class AuthCookieTestCase(unittest.TestCase):
     def test_cookie_str_changed_data(self):
         c = self.jar.makeCookie(self.exp, self.data)
         cout = c.output(header="")
-        cout_str = cout[:36] + 'X' + cout[37:]
+        cout_str = cout[:24] + 'X' + cout[25:]
         s = SimpleCookie()
         s.load(cout_str)
         self.assertFalse(self.jar.isGoodCookieString(s.output(header="")))
@@ -140,7 +140,7 @@ class AuthCookieTestCase(unittest.TestCase):
     def test_cookie_str_changed_mac(self):
         c = self.jar.makeCookie(self.exp, self.data)
         cout = c.output(header="")
-        cout_str = cout[:76] + 'X' + cout[77:]
+        cout_str = cout[:64] + 'X' + cout[65:]
         s = SimpleCookie()
         s.load(cout_str)
         self.assertFalse(self.jar.isGoodCookieString(s.output(header="")))
